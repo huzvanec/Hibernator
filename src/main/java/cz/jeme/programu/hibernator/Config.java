@@ -1,13 +1,13 @@
 package cz.jeme.programu.hibernator;
 
+import org.bukkit.configuration.InvalidConfigurationException;
+import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.configuration.file.YamlConfiguration;
+
 import java.io.File;
 import java.io.IOException;
 import java.util.Map;
 import java.util.logging.Level;
-
-import org.bukkit.configuration.InvalidConfigurationException;
-import org.bukkit.configuration.file.FileConfiguration;
-import org.bukkit.configuration.file.YamlConfiguration;
 
 public class Config {
 
@@ -40,12 +40,8 @@ public class Config {
             "LOG_HIBERNATE", "log-hibernation", "LOG_CHUNKS", "log-chunk-unload", "LOG_SCHEDULE", "log-schedule");
 
     public void setPluginEnabled(boolean pluginEnabled) {
+        reload();
         this.pluginEnabled = pluginEnabled;
-        save();
-    }
-
-    public void setSleep(long sleep) {
-        this.sleep = sleep;
         save();
     }
 
@@ -106,36 +102,16 @@ public class Config {
         return startDelay;
     }
 
-    public void setStartDelay(int startDelay) {
-        this.startDelay = startDelay;
-        save();
-    }
-
     public boolean doUnloadChunks() {
         return unloadChunks;
-    }
-
-    public void setUnloadChunks(boolean unloadChunks) {
-        this.unloadChunks = unloadChunks;
-        save();
     }
 
     public int getLeaveDelay() {
         return leaveDelay;
     }
 
-    public void setLeaveDelay(int leaveDelay) {
-        this.leaveDelay = leaveDelay;
-        save();
-    }
-
     public boolean doLogHibernation() {
         return logHibernation;
-    }
-
-    public void setLogHibernation(boolean logHibernation) {
-        this.logHibernation = logHibernation;
-        save();
     }
 
     public boolean doLogChunks() {
@@ -144,15 +120,5 @@ public class Config {
 
     public boolean doLogSchedule() {
         return logSchedule;
-    }
-
-    public void setLogSchedule(boolean logSchedule) {
-        this.logSchedule = logSchedule;
-        save();
-    }
-
-    public void setLogChunks(boolean logChunks) {
-        this.logChunks = logChunks;
-        save();
     }
 }
