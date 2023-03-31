@@ -1,4 +1,5 @@
 # If the plugin is enabled or not
+# This setting will be changed from in-game using the /hibernator command
 # Default: true
 enabled: true
 
@@ -16,7 +17,7 @@ unload-chunks: true
 player-leave-delay: 10
 
 # Delay, in seconds, between the server start and the hibernation start
-# Be aware, that this delay will not work when reloading the server!
+# Please note that this delay will not work when reloading the server!
 # Default: 10
 server-start-delay: 10
 
