@@ -17,7 +17,9 @@ public class HibernationManager {
     public HibernationManager(Config config) {
         this.config = config;
 
-        scheduleEnableHibernation(config.getStartDelay() * 20L);
+        if (Bukkit.getOnlinePlayers().size() == 0) {
+            scheduleEnableHibernation(config.getStartDelay() * 20L);
+        }
     }
 
     public boolean enableHibernation() {
@@ -25,7 +27,9 @@ public class HibernationManager {
             return false;
         }
         hibernation = new HibernationRunnable(config.getSleep());
-        hibernation.unloadChunks(config.doLogChunks());
+        if (config.doUnloadChunks()) {
+            hibernation.unloadChunks(config.doLogChunks());
+        }
         hibernation.runTaskTimer(Hibernator.getPlugin(Hibernator.class), 0L, 1L);
         hibernationEnabled = true;
         if (config.doLogHibernation()) {
@@ -35,7 +39,6 @@ public class HibernationManager {
     }
 
     public void scheduleEnableHibernation(long delay) {
-        Bukkit.getLogger();
         if (config.doLogSchedule()) {
             Hibernator.serverLog(Level.INFO, "Scheduled hibernation in " + delay / 20 + " seconds (" + delay + " ticks)");
         }
