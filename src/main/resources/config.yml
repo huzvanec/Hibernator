@@ -1,0 +1,32 @@
+# If the plugin is enabled or not
+# Default: true
+enabled: true
+
+# Server TPS when in hibernation
+# Setting this lower than 0.5 may crash your server!
+# Default: 1
+hibernation-tps: 1
+
+# Unload chunks when hibernation starts
+# Default: true
+unload-chunks: true
+
+# Delay, in seconds, between the last player disconnecting and the hibernation start
+# Default: 10
+player-leave-delay: 10
+
+# Delay, in seconds, between the server start (or reload) and the hibernation start
+# Default: 10
+server-start-delay: 10
+
+# Log a message when turning hibernation on and off
+# Default: true
+log-hibernation: true
+
+# Log info about unloading chunks
+# Default: false
+log-chunk-unload: false
+
+# Log a message when hibernation is scheduled
+# Default: false
+log-schedule: false
