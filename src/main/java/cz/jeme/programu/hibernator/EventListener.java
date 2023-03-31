@@ -23,9 +23,9 @@ public class EventListener implements Listener {
 
     @EventHandler
     private void onPlayerLeave(PlayerQuitEvent event) {
-        if (Bukkit.getOnlinePlayers().size() > 0) {
-            return;
+        // 1 inclusive here, because this event is called before the player actually leaves
+        if (Bukkit.getOnlinePlayers().size() <= 1) {
+            hibernationManager.scheduleEnableHibernation(config.getLeaveDelay() * 20L);
         }
-        hibernationManager.scheduleEnableHibernation(config.getLeaveDelay() * 20L);
     }
 }
