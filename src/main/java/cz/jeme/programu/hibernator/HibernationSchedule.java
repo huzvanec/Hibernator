@@ -1,6 +1,5 @@
 package cz.jeme.programu.hibernator;
 
-import org.bukkit.Bukkit;
 import org.bukkit.scheduler.BukkitRunnable;
 
 public class HibernationSchedule extends BukkitRunnable {
@@ -13,7 +12,6 @@ public class HibernationSchedule extends BukkitRunnable {
 
     @Override
     public void run() {
-        Bukkit.getLogger();
         snoreHandler.enableHibernation();
     }
 }
