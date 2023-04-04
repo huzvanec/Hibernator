@@ -6,6 +6,7 @@ import org.bukkit.configuration.file.YamlConfiguration;
 
 import java.io.File;
 import java.io.IOException;
+import java.text.DecimalFormat;
 import java.util.Map;
 import java.util.logging.Level;
 
@@ -30,6 +31,8 @@ public class Config {
 
     private boolean logSchedule;
 
+    public static final DecimalFormat decimalFormatter = new DecimalFormat("##.00");
+
     public Config(File configFile) {
         this.configFile = configFile;
         reload();
@@ -39,29 +42,22 @@ public class Config {
             "UNLOAD_CHUNKS", "unload-chunks", "LEAVE_DELAY", "player-leave-delay", "START_DELAY", "server-start-delay",
             "LOG_HIBERNATE", "log-hibernation", "LOG_CHUNKS", "log-chunk-unload", "LOG_SCHEDULE", "log-schedule");
 
-    public void setPluginEnabled(boolean pluginEnabled) {
-        reload();
-        this.pluginEnabled = pluginEnabled;
+    public void reload() {
+        reloadYaml();
+        load();
         save();
     }
 
-    public boolean isPluginEnabled() {
-        return pluginEnabled;
-    }
-
-    public long getSleep() {
-        return sleep;
-    }
-
-    public void reload() {
+    public void reloadYaml() {
         try {
             yaml.load(configFile);
         } catch (IOException | InvalidConfigurationException e) {
             Hibernator.serverLog(Level.SEVERE, "Unable to load config!");
             e.printStackTrace();
-            return;
         }
+    }
 
+    public void load() {
         pluginEnabled = yaml.getBoolean(CONFIG_MAP.get("ENABLED"));
         double hibernateTPS = yaml.getDouble(CONFIG_MAP.get("TPS"));
         if (hibernateTPS < 0.5) {
@@ -71,7 +67,7 @@ public class Config {
         if (hibernateTPS > 20) {
             throw new IllegalArgumentException("TPS cannot be higher than 20!");
         }
-        sleep = (long) (1000 / hibernateTPS);
+        sleep = (long) parseSleep(hibernateTPS);
         unloadChunks = yaml.getBoolean(CONFIG_MAP.get("UNLOAD_CHUNKS"));
         leaveDelay = yaml.getInt(CONFIG_MAP.get("LEAVE_DELAY"));
         logHibernation = yaml.getBoolean(CONFIG_MAP.get("LOG_HIBERNATE"));
@@ -82,7 +78,7 @@ public class Config {
 
     public void save() {
         yaml.set(CONFIG_MAP.get("ENABLED"), pluginEnabled);
-        yaml.set(CONFIG_MAP.get("TPS"), 1000F / sleep);
+        yaml.set(CONFIG_MAP.get("TPS"), parseSleep(sleep));
         yaml.set(CONFIG_MAP.get("UNLOAD_CHUNKS"), unloadChunks);
         yaml.set(CONFIG_MAP.get("LEAVE_DELAY"), leaveDelay);
         yaml.set(CONFIG_MAP.get("LOG_HIBERNATE"), logHibernation);
@@ -96,6 +92,25 @@ public class Config {
             Hibernator.serverLog(Level.SEVERE, "Unable to save config!");
             e.printStackTrace();
         }
+    }
+
+    public static double parseSleep(double sleep) {
+        return Double.parseDouble(decimalFormatter.format(1000D / sleep));
+    }
+
+
+    public void setPluginEnabled(boolean pluginEnabled) {
+        reload();
+        this.pluginEnabled = pluginEnabled;
+        save();
+    }
+
+    public boolean isPluginEnabled() {
+        return pluginEnabled;
+    }
+
+    public long getSleep() {
+        return sleep;
     }
 
     public int getStartDelay() {
