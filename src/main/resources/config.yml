@@ -17,7 +17,7 @@ unload-chunks: true
 player-leave-delay: 10
 
 # Delay, in seconds, between the server start and the hibernation start
-# Please note that this delay will not work when reloading the server!
+# Please note that this delay does not work when reloading the server!
 # Default: 10
 server-start-delay: 10
 
