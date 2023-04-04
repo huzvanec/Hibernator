@@ -6,7 +6,7 @@ In hibernation, the plugin will lower the server TPS (ticks per second). You can
 ## What are the disadvantages?
 **• Because the server is frozen during hibernation, plugins that run tasks even when players are offline will not work correctly!** <br>
 e.g. [Dynmap](https://github.com/webbukkit/dynmap) won't be able to run its web server during hibernation. <br>
-• Your console will be spammed with "Can't keep up! Is the server overloaded?" messages
+• Your console will be spammed with "Can't keep up! Is the server overloaded?" messages. This can be resolved by changing the ```warn-on-overload``` setting to ```false``` in ```bukkit.yml```, but note that this will disable all server overload warning messages.
 ## What are the benefits?
 • In hibernation CPU usage is reduced to 0-1% <br>
 • Saves electricity

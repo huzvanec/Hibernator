@@ -1,17 +1,16 @@
 package cz.jeme.programu.hibernator;
 
-import java.io.File;
-import java.util.logging.Level;
-
+import net.md_5.bungee.api.ChatColor;
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.PluginCommand;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
-
-import net.md_5.bungee.api.ChatColor;
 import org.jetbrains.annotations.NotNull;
+
+import java.io.File;
+import java.util.logging.Level;
 
 public class Hibernator extends JavaPlugin {
     private Config config;
