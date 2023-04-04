@@ -81,13 +81,14 @@ public class Hibernator extends JavaPlugin {
                 if (config.isPluginEnabled()) {
                     pluginStatus = "enabled";
                 }
-                sender.sendMessage(PREFIX + ChatColor.GREEN + "Plugin is " + pluginStatus);
+                sender.sendMessage(PREFIX + ChatColor.GREEN + "Status:");
+                sender.sendMessage(ChatColor.GREEN + "Plugin is " + pluginStatus);
                 String hibernationStatus = "off";
                 if (hibernationManager.isHibernationEnabled()) {
                     hibernationStatus = "running";
                 }
-                sender.sendMessage(PREFIX + ChatColor.GREEN + "Hibernation is " + hibernationStatus);
-                sender.sendMessage(PREFIX + ChatColor.GREEN + "Hibernation TPS is set to " + 1000F / config.getSleep());
+                sender.sendMessage(ChatColor.GREEN + "Hibernation is " + hibernationStatus);
+                sender.sendMessage(ChatColor.GREEN + "Hibernation TPS is set to " + Config.parseSleep(config.getSleep()));
                 return true;
             }
             sender.sendMessage(PREFIX + ChatColor.RED + "Unknown command!");
