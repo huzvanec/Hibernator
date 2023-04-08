@@ -1,3 +1,4 @@
+![image](https://raw.githubusercontent.com/Mandlemankiller/Hibernator/master/branding/banner_resized.png)
 # Hibernator
 ## What is it?
 Hibernator is a minecraft plugin inspired by [Hibernate](https://www.spigotmc.org/resources/hibernate.4441/) that will hibernate the server when no players are playing on it
