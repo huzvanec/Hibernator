@@ -39,7 +39,7 @@ public class HibernationManager {
     }
 
     public void scheduleEnableHibernation(long delay) {
-        if (config.doLogSchedule()) {
+        if (config.doLogSchedule() && config.isPluginEnabled()) {
             Hibernator.serverLog(Level.INFO, "Scheduled hibernation in " + delay / 20 + " seconds (" + delay + " ticks)");
         }
         Hibernator plugin = Hibernator.getPlugin(Hibernator.class);

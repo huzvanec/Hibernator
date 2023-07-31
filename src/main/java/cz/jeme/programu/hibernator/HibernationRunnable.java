@@ -11,12 +11,12 @@ public class HibernationRunnable extends BukkitRunnable {
 
     private long sleep;
 
-    public HibernationRunnable(long sleep) {
-        this.sleep = sleep;
+    public HibernationRunnable(double sleep) {
+        this.sleep = Math.round(sleep);
     }
 
-    public void setSleep(long sleep) {
-        this.sleep = sleep;
+    public void setSleep(double sleep) {
+        this.sleep = Math.round(sleep);
     }
 
     @Override

@@ -4,14 +4,14 @@ import org.bukkit.scheduler.BukkitRunnable;
 
 public class HibernationSchedule extends BukkitRunnable {
 
-    HibernationManager snoreHandler;
+    HibernationManager hibernationManager;
 
     public HibernationSchedule(HibernationManager snoreHandler) {
-        this.snoreHandler = snoreHandler;
+        this.hibernationManager = snoreHandler;
     }
 
     @Override
     public void run() {
-        snoreHandler.enableHibernation();
+        hibernationManager.enableHibernation();
     }
 }

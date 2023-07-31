@@ -6,7 +6,6 @@ import org.bukkit.configuration.file.YamlConfiguration;
 
 import java.io.File;
 import java.io.IOException;
-import java.text.DecimalFormat;
 import java.util.Map;
 import java.util.logging.Level;
 
@@ -17,7 +16,7 @@ public class Config {
 
     private boolean pluginEnabled;
 
-    private long sleep;
+    private double sleep;
 
     private boolean unloadChunks;
 
@@ -30,8 +29,6 @@ public class Config {
     private boolean logChunks;
 
     private boolean logSchedule;
-
-    public static final DecimalFormat decimalFormatter = new DecimalFormat("##.00");
 
     public Config(File configFile) {
         this.configFile = configFile;
@@ -67,7 +64,7 @@ public class Config {
         if (hibernateTPS > 20) {
             throw new IllegalArgumentException("TPS cannot be higher than 20!");
         }
-        sleep = (long) parseSleep(hibernateTPS);
+        sleep = parseSleep(hibernateTPS);
         unloadChunks = yaml.getBoolean(CONFIG_MAP.get("UNLOAD_CHUNKS"));
         leaveDelay = yaml.getInt(CONFIG_MAP.get("LEAVE_DELAY"));
         logHibernation = yaml.getBoolean(CONFIG_MAP.get("LOG_HIBERNATE"));
@@ -95,7 +92,7 @@ public class Config {
     }
 
     public static double parseSleep(double sleep) {
-        return Double.parseDouble(decimalFormatter.format(1000D / sleep));
+        return 1000d / sleep;
     }
 
 
@@ -109,7 +106,7 @@ public class Config {
         return pluginEnabled;
     }
 
-    public long getSleep() {
+    public double getSleep() {
         return sleep;
     }
 

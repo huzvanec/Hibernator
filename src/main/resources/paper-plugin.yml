@@ -1,0 +1,4 @@
+name: Hibernator
+version: '${project.version}'
+main: cz.jeme.programu.hibernator.Hibernator
+api-version: '1.19'
