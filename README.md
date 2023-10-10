@@ -4,7 +4,17 @@
 Hibernator is a minecraft plugin inspired by [Hibernate](https://www.spigotmc.org/resources/hibernate.4441/) that will hibernate the server when no players are playing on it
 ## How does it work?
 In hibernation, the plugin will lower the server TPS (ticks per second). You can think of it as the plugin creating "fake lag". Hibernation will automatically turn off when a player joins. When all players disconnect, hibernation is enabled again.
-## What are the disadvantages?****
+## Usage
+### Turn on Hibernator
+`/hb enable`
+### Turn off Hibernator
+`/hb disable`
+### Check Hibernator status
+`/hb status`<br>
+![image](https://raw.githubusercontent.com/Mandlemankiller/Hibernator/master/branding/status.png)
+### Reload Hibernator
+`/hb reload`
+## What are the disadvantages?
 **• Because the server is frozen during hibernation, plugins that run tasks even when players are offline will not work correctly!** <br>
 e.g. [Dynmap](https://github.com/webbukkit/dynmap) won't be able to run its web server during hibernation. <br>
 • Your console will be spammed with "Can't keep up! Is the server overloaded?" messages. This can be resolved by changing the ```warn-on-overload``` setting to ```false``` in ```bukkit.yml```, but note that this will disable all server overload warning messages.
