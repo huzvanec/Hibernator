@@ -7,7 +7,7 @@ import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.logging.Level;
 
-public class HibernationRunnable extends BukkitRunnable {
+public final class HibernationRunnable extends BukkitRunnable {
 
     private long sleep;
 
@@ -24,8 +24,7 @@ public class HibernationRunnable extends BukkitRunnable {
         try {
             Thread.sleep(sleep);
         } catch (InterruptedException e) {
-            Hibernator.serverLog(Level.SEVERE, "Sleep interrupted!");
-            e.printStackTrace();
+            Hibernator.serverLog("Hibernation interrupted!", e);
         }
     }
 

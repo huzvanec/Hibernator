@@ -1,43 +1,61 @@
 package cz.jeme.programu.hibernator;
 
 import org.bukkit.Bukkit;
+import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.jetbrains.annotations.NotNull;
 
-import java.io.File;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.util.logging.Level;
 
-public class Hibernator extends JavaPlugin {
-
-    private HibernationManager hibernationManager;
+public final class Hibernator extends JavaPlugin {
+    public static @NotNull FileConfiguration config;
 
     @Override
     public void onEnable() {
         saveDefaultConfig();
-        Config config = new Config(new File(getDataFolder(), "config.yml"));
-
-        hibernationManager = new HibernationManager(config);
-        EventListener eventListener = new EventListener(hibernationManager, config);
+        reload();
 
         PluginManager pluginManager = Bukkit.getPluginManager();
-        pluginManager.registerEvents(eventListener, this);
+        pluginManager.registerEvents(EventListener.INSTANCE, this);
 
-        new HibernatorCommand(config, hibernationManager);
+        new HibernatorCommand(this); // Register /hibernator command
+        if (Bukkit.getOnlinePlayers().isEmpty()) {
+            HibernationManager.INSTANCE.scheduleEnableHibernation(
+                    Hibernator.config.getLong("server-start-delay") * 20L
+            );
+        }
+    }
+
+    public void reload() {
+        reloadConfig();
+        config = getConfig();
     }
 
     @Override
     public void onDisable() {
-        getConfig();
-        hibernationManager.disableHibernation();
+        HibernationManager.INSTANCE.disableHibernation();
     }
 
-    public static void reload(Config config, HibernationManager hibernationManager) {
-        config.reload();
-        hibernationManager.reload();
+    public static void serverLog(@NotNull Level level, @NotNull String message) {
+        Bukkit.getLogger().log(level, Message.strip(Message.PREFIX) + message);
     }
 
-    public static void serverLog(Level lvl, String msg) {
-        assert msg != null : "Message is null!";
-        Bukkit.getServer().getLogger().log(lvl, Messages.strip(Messages.PREFIX) + msg);
+    public static void serverLog(@NotNull Level level, @NotNull String message, @NotNull Exception exception) {
+        StringWriter stringWriter = new StringWriter();
+        PrintWriter printWriter = new PrintWriter(stringWriter);
+        exception.printStackTrace(printWriter);
+        String stackTraceStr = stringWriter.toString();
+        serverLog(level, message + "\n" + stackTraceStr);
+    }
+
+    public static void serverLog(@NotNull String message, @NotNull Exception exception) {
+        serverLog(Level.SEVERE, message, exception);
+    }
+
+    public static @NotNull Hibernator getPlugin() {
+        return getPlugin(Hibernator.class);
     }
 }

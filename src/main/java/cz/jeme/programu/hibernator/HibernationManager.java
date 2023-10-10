@@ -1,12 +1,13 @@
 package cz.jeme.programu.hibernator;
 
 import org.bukkit.Bukkit;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.logging.Level;
 
-public class HibernationManager {
-    private HibernationRunnable hibernation;
-    private final Config config;
+public enum HibernationManager {
+    INSTANCE;
+    private @Nullable HibernationRunnable hibernation;
 
     private boolean hibernationEnabled = false;
 
@@ -14,46 +15,37 @@ public class HibernationManager {
         return hibernationEnabled;
     }
 
-    public HibernationManager(Config config) {
-        this.config = config;
-
-        if (Bukkit.getOnlinePlayers().size() == 0) {
-            scheduleEnableHibernation(config.getStartDelay() * 20L);
-        }
-    }
-
     public boolean enableHibernation() {
-        if (hibernationEnabled || !config.isPluginEnabled() || Bukkit.getOnlinePlayers().size() > 0) {
+        if (hibernationEnabled || !Hibernator.config.getBoolean("enabled") || !Bukkit.getOnlinePlayers().isEmpty()) {
             return false;
         }
-        hibernation = new HibernationRunnable(config.getSleep());
-        if (config.doUnloadChunks()) {
-            hibernation.unloadChunks(config.doLogChunks());
+        double tps = Hibernator.config.getDouble("hibernation-tps");
+        hibernation = new HibernationRunnable(1000D / tps);
+        if (Hibernator.config.getBoolean("unload-chunks")) {
+            hibernation.unloadChunks(Hibernator.config.getBoolean("log-chunk-unload"));
         }
-        hibernation.runTaskTimer(Hibernator.getPlugin(Hibernator.class), 0L, 1L);
+        hibernation.runTaskTimer(Hibernator.getPlugin(), 0L, 1L);
         hibernationEnabled = true;
-        if (config.doLogHibernation()) {
-            Hibernator.serverLog(Level.INFO, "Entered hibernation (" + 1000F / config.getSleep() + " TPS)");
+        if (Hibernator.config.getBoolean("log-hibernation")) {
+            Hibernator.serverLog(Level.INFO, "Entered hibernation (" + tps + " TPS)");
         }
         return true;
     }
 
     public void scheduleEnableHibernation(long delay) {
-        if (config.doLogSchedule() && config.isPluginEnabled()) {
-            Hibernator.serverLog(Level.INFO, "Scheduled hibernation in " + delay / 20 + " seconds (" + delay + " ticks)");
+        if (Hibernator.config.getBoolean("log-schedule") && Hibernator.config.getBoolean("enabled")) {
+            Hibernator.serverLog(Level.INFO, "Scheduled hibernation in " + delay / 20D + " seconds (" + delay + " ticks)");
         }
-        Hibernator plugin = Hibernator.getPlugin(Hibernator.class);
-        new HibernationSchedule(this).runTaskLater(plugin, delay);
+        Bukkit.getScheduler().runTaskLater(Hibernator.getPlugin(), this::enableHibernation, delay);
     }
 
     public boolean disableHibernation() {
-        if (!hibernationEnabled) {
-            return false;
-        }
+        if (!hibernationEnabled) return false;
+        assert hibernation != null : "Hibernation is null while enabled!";
         hibernation.cancel();
         hibernation = null;
         hibernationEnabled = false;
-        if (config.doLogHibernation()) {
+        if (Hibernator.config.getBoolean("log-hibernation")) {
             Hibernator.serverLog(Level.INFO, "Exited hibernation");
         }
         return true;
@@ -61,9 +53,9 @@ public class HibernationManager {
 
     public void reload() {
         if (hibernation != null) {
-            hibernation.setSleep(config.getSleep());
+            hibernation.setSleep(1000D / Hibernator.config.getDouble("hibernation-tps"));
         }
-        if (hibernationEnabled && !config.isPluginEnabled()) {
+        if (hibernationEnabled && !Hibernator.config.getBoolean("enabled")) {
             disableHibernation();
         }
     }

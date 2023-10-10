@@ -5,71 +5,72 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
-public class HibernatorCommand extends Command {
-    private final HibernationManager hibernationManager;
-    private final Config config;
-    protected HibernatorCommand(Config config, HibernationManager hibernationManager) {
-        super("hibernator", "Main hibernator command", "false", Collections.emptyList());
-        register();
-        this.config = config;
-        this.hibernationManager = hibernationManager;
-        setPermission("hibernator.hibernator");
-    }
+public final class HibernatorCommand extends Command {
+    private final @NotNull Hibernator plugin;
 
-    private void register() {
+    HibernatorCommand(@NotNull Hibernator plugin) {
+        super("hibernator", "Main hibernator command", "false", List.of("hb"));
         Bukkit.getCommandMap().register("hibernator", this);
+        setPermission("hibernator.hibernator");
+        this.plugin = plugin;
     }
 
     @Override
     public boolean execute(@NotNull CommandSender sender, @NotNull String commandLabel, @NotNull String[] args) {
         if (args.length == 0) {
-            config.setPluginEnabled(!config.isPluginEnabled());
-            if (config.isPluginEnabled()) {
-                sender.sendMessage(Messages.prefix("<green>Hibernator enabled</green>"));
-                hibernationManager.enableHibernation();
+            Hibernator.config.set(
+                    "enabled",
+                    !Hibernator.config.getBoolean("enabled")
+            );
+            plugin.saveConfig();
+            if (Hibernator.config.getBoolean("enabled")) {
+                sender.sendMessage(Message.prefix("<green>Hibernator enabled</green>"));
+                HibernationManager.INSTANCE.enableHibernation();
             } else {
-                hibernationManager.disableHibernation();
-                sender.sendMessage(Messages.prefix("<green>Hibernator disabled</green>"));
+                HibernationManager.INSTANCE.disableHibernation();
+                sender.sendMessage(Message.prefix("<green>Hibernator disabled</green>"));
             }
             return true;
         }
         if (args[0].equals("reload")) {
-            Hibernator.reload(config, hibernationManager);
-            sender.sendMessage(Messages.prefix("<green>Hibernator reloaded successfully</green>"));
+            HibernationManager.INSTANCE.reload();
+            plugin.reload();
+            sender.sendMessage(Message.prefix("<green>Hibernator reloaded successfully</green>"));
             return true;
         }
         if (args[0].equals("enable")) {
-            config.setPluginEnabled(true);
-            hibernationManager.enableHibernation();
-            sender.sendMessage(Messages.prefix("<green>Hibernator enabled</green>"));
+            Hibernator.config.set("enabled", true);
+            HibernationManager.INSTANCE.enableHibernation();
+            sender.sendMessage(Message.prefix("<green>Hibernator enabled</green>"));
             return true;
         }
         if (args[0].equals("disable")) {
-            config.setPluginEnabled(false);
-            hibernationManager.disableHibernation();
-            sender.sendMessage(Messages.prefix("<green>Hibernator disabled</green>"));
+            Hibernator.config.set("enabled", false);
+            HibernationManager.INSTANCE.disableHibernation();
+            sender.sendMessage(Message.prefix("<green>Hibernator disabled</green>"));
             return true;
         }
         if (args[0].equals("status")) {
             String pluginStatus = "<red>disabled</red>";
-            if (config.isPluginEnabled()) {
+            if (Hibernator.config.getBoolean("enabled")) {
                 pluginStatus = "<green>enabled</green>";
             }
-            sender.sendMessage(Messages.prefix("<aqua><b>=== STATUS ===</b></aqua>"));
-            sender.sendMessage(Messages.prefix("<aqua>Plugin: " + pluginStatus + "</aqua>"));
+            sender.sendMessage(Message.prefix("<aqua><b>=== STATUS ===</b></aqua>"));
+            sender.sendMessage(Message.prefix("<aqua>Plugin: " + pluginStatus + "</aqua>"));
             String hibernationStatus = "<red>off</red>";
-            if (hibernationManager.isHibernationEnabled()) {
+            if (HibernationManager.INSTANCE.isHibernationEnabled()) {
                 hibernationStatus = "<green>running</green>";
             }
-            sender.sendMessage(Messages.prefix("<aqua>Hibernation: " + hibernationStatus + "</aqua>"));
-            double tps = Config.parseSleep(config.getSleep());
-            sender.sendMessage(Messages.prefix("<aqua>Hibernation TPS: <transition:#00FF00:#FF0000:" + tps / 20d + ">" + tps + "</transition></aqua>"));
+            sender.sendMessage(Message.prefix("<aqua>Hibernation: " + hibernationStatus + "</aqua>"));
+            double tps = Hibernator.config.getDouble("hibernation-tps");
+            sender.sendMessage(Message.prefix("<aqua>Hibernation TPS: <transition:#00FF00:#FF0000:" + tps / 20d + ">" + tps + "</transition></aqua>"));
             return true;
         }
-        sender.sendMessage(Messages.prefix("<red>Unknown command!</red>"));
+        sender.sendMessage(Message.prefix("<red>Unknown command!</red>"));
         return true;
     }
 
@@ -81,8 +82,8 @@ public class HibernatorCommand extends Command {
         return Collections.emptyList();
     }
 
-    private List<String> containsFilter(List<String> list, String mark) {
-        return list.stream()
+    private @NotNull List<String> containsFilter(@NotNull Collection<String> collection, @NotNull String mark) {
+        return collection.stream()
                 .filter(item -> item.contains(mark))
                 .toList();
     }
