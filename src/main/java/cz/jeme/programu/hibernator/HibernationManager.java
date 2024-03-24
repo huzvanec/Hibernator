@@ -11,11 +11,11 @@ public enum HibernationManager {
     private @Nullable Schedule schedule;
 
     public boolean enableHibernation() {
+        schedule = null;
         if (isHibernating() || !Hibernator.config.getBoolean("enabled") || !Bukkit.getOnlinePlayers().isEmpty()) {
             return false;
         }
         double tps = Hibernator.config.getDouble("hibernation-tps");
-        schedule = null;
         hibernation = new HibernationRunnable(1000D / tps);
         if (Hibernator.config.getBoolean("unload-chunks")) {
             hibernation.unloadChunks(Hibernator.config.getBoolean("log-chunk-unload"));

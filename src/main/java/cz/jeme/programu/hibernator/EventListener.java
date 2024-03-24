@@ -20,12 +20,13 @@ public enum EventListener implements Listener {
                 throw new NullPointerException("player-wake-message is null! Please set it in config!");
             }
             event.disallow(
-                    PlayerLoginEvent.Result.KICK_FULL,
+                    PlayerLoginEvent.Result.KICK_OTHER,
                     Message.from(message.replace("\\n", "\n"))
                     // Yaml parses newline characters, this will replace \\n with \n
             );
         }
         HibernationManager.INSTANCE.disableHibernation();
+        // schedule hibernation if the player decides not to reconnect
         HibernationManager.INSTANCE.scheduleHibernation(
                 Hibernator.config.getLong("player-leave-delay") * 20L
         );
