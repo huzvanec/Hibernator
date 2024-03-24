@@ -23,7 +23,7 @@ public final class Hibernator extends JavaPlugin {
 
         new HibernatorCommand(this); // Register /hibernator command
         if (Bukkit.getOnlinePlayers().isEmpty()) {
-            HibernationManager.INSTANCE.scheduleEnableHibernation(
+            HibernationManager.INSTANCE.scheduleHibernation(
                     Hibernator.config.getLong("server-start-delay") * 20L
             );
         }

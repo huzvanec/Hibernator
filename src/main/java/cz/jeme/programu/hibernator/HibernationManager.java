@@ -8,43 +8,36 @@ import java.util.logging.Level;
 public enum HibernationManager {
     INSTANCE;
     private @Nullable HibernationRunnable hibernation;
-
-    private boolean hibernationEnabled = false;
-
-    public boolean isHibernationEnabled() {
-        return hibernationEnabled;
-    }
+    private @Nullable Schedule schedule;
 
     public boolean enableHibernation() {
-        if (hibernationEnabled || !Hibernator.config.getBoolean("enabled") || !Bukkit.getOnlinePlayers().isEmpty()) {
+        if (isHibernating() || !Hibernator.config.getBoolean("enabled") || !Bukkit.getOnlinePlayers().isEmpty()) {
             return false;
         }
         double tps = Hibernator.config.getDouble("hibernation-tps");
+        schedule = null;
         hibernation = new HibernationRunnable(1000D / tps);
         if (Hibernator.config.getBoolean("unload-chunks")) {
             hibernation.unloadChunks(Hibernator.config.getBoolean("log-chunk-unload"));
         }
         hibernation.runTaskTimer(Hibernator.getPlugin(), 0L, 1L);
-        hibernationEnabled = true;
         if (Hibernator.config.getBoolean("log-hibernation")) {
             Hibernator.serverLog(Level.INFO, "Entered hibernation (" + tps + " TPS)");
         }
         return true;
     }
 
-    public void scheduleEnableHibernation(long delay) {
+    public void scheduleHibernation(long delay) {
         if (Hibernator.config.getBoolean("log-schedule") && Hibernator.config.getBoolean("enabled")) {
             Hibernator.serverLog(Level.INFO, "Scheduled hibernation in " + delay / 20D + " seconds (" + delay + " ticks)");
         }
-        Bukkit.getScheduler().runTaskLater(Hibernator.getPlugin(), this::enableHibernation, delay);
+        schedule = new Schedule(delay);
     }
 
     public boolean disableHibernation() {
-        if (!hibernationEnabled) return false;
-        assert hibernation != null : "Hibernation is null while enabled!";
+        if (!isHibernating()) return false;
         hibernation.cancel();
         hibernation = null;
-        hibernationEnabled = false;
         if (Hibernator.config.getBoolean("log-hibernation")) {
             Hibernator.serverLog(Level.INFO, "Exited hibernation");
         }
@@ -55,8 +48,20 @@ public enum HibernationManager {
         if (hibernation != null) {
             hibernation.setSleep(1000D / Hibernator.config.getDouble("hibernation-tps"));
         }
-        if (hibernationEnabled && !Hibernator.config.getBoolean("enabled")) {
+        if (isHibernating() && !Hibernator.config.getBoolean("enabled")) {
             disableHibernation();
         }
+    }
+
+    public @Nullable Schedule getSchedule() {
+        return schedule;
+    }
+
+    public boolean isHibernating() {
+        return hibernation != null;
+    }
+
+    public boolean isScheduled() {
+        return schedule != null;
     }
 }

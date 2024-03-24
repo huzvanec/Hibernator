@@ -19,6 +19,7 @@ public final class HibernationRunnable extends BukkitRunnable {
         this.sleep = Math.round(sleep);
     }
 
+
     @Override
     public void run() {
         try {

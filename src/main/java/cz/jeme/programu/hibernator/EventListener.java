@@ -13,20 +13,20 @@ public enum EventListener implements Listener {
 
     @EventHandler(priority = EventPriority.HIGHEST)
     private void onPlayerLogin(@NotNull PlayerLoginEvent event) {
-        if (HibernationManager.INSTANCE.isHibernationEnabled()) {
+        if (HibernationManager.INSTANCE.isHibernating()) {
             String message = Hibernator.config.getString("player-wake-message");
             if (message == null) {
                 HibernationManager.INSTANCE.disableHibernation();
                 throw new NullPointerException("player-wake-message is null! Please set it in config!");
             }
             event.disallow(
-                    PlayerLoginEvent.Result.KICK_OTHER,
+                    PlayerLoginEvent.Result.KICK_FULL,
                     Message.from(message.replace("\\n", "\n"))
                     // Yaml parses newline characters, this will replace \\n with \n
             );
         }
         HibernationManager.INSTANCE.disableHibernation();
-        HibernationManager.INSTANCE.scheduleEnableHibernation(
+        HibernationManager.INSTANCE.scheduleHibernation(
                 Hibernator.config.getLong("player-leave-delay") * 20L
         );
     }
@@ -35,7 +35,7 @@ public enum EventListener implements Listener {
     private void onPlayerLeave(@NotNull PlayerQuitEvent event) {
         // 1 inclusive here, because this event is called before the player actually leaves
         if (Bukkit.getOnlinePlayers().size() <= 1) {
-            HibernationManager.INSTANCE.scheduleEnableHibernation(
+            HibernationManager.INSTANCE.scheduleHibernation(
                     Hibernator.config.getLong("player-leave-delay") * 20L
             );
         }
